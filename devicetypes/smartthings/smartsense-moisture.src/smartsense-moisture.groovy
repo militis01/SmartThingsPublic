@@ -12,7 +12,7 @@
  *
  */
 metadata {
-	definition (name: "SmartSense Moisture", namespace: "smartthings", author: "SmartThings") {
+	definition (name: "SmartSense Moisture", namespace: "smartthings", author: "SmartThings", runLocally: true, minHubCoreVersion: '000.017.0012', executeCommandsLocally: false) {
 		capability "Water Sensor"
 		capability "Sensor"
 		capability "Battery"
@@ -126,7 +126,6 @@ def zwaveEvent(physicalgraph.zwave.commands.batteryv1.BatteryReport cmd) {
 		map.name = "battery"
 		map.value = cmd.batteryLevel > 0 ? cmd.batteryLevel.toString() : 1
 		map.unit = "%"
-		map.displayed = false
 	}
 	map
 }
@@ -166,6 +165,15 @@ def zwaveEvent(physicalgraph.zwave.commands.sensormultilevelv5.SensorMultilevelR
         }
         map.unit = location.temperatureScale
 	}
+	map
+}
+
+def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd)
+{
+	def map = [:]
+	map.name = "water"
+	map.value = cmd.value ? "wet" : "dry"
+	map.descriptionText = "${device.displayName} is ${map.value}"
 	map
 }
 
